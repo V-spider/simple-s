@@ -33,7 +33,7 @@ void execute_cd(char* arg) {
 }
 
 void execute_ls(char* arg) {
-    char* ls_args[] = { "/bin/ls", "-l", arg, NULL };
+    char* ls_args[] = { "/bin/ls", arg, NULL };
 
     pid_t pid = fork();
 
@@ -91,13 +91,29 @@ void execute_command(char* command) {
     }
 
     if (strcmp(arguments[0], "cd") == 0) {
-        execute_cd(arguments[1]);
+        if (arg_count > 2) {
+            fprintf(stderr, "cd: too many arguments\n");
+        } else {
+            execute_cd(arguments[1]);
+        }
     } else if (strcmp(arguments[0], "ls") == 0) {
-        execute_ls(arguments[1]);
+        if (arg_count > 2) {
+            fprintf(stderr, "ls: too many arguments\n");
+        } else {
+            execute_ls(arguments[1]);
+        }
     } else if (strcmp(arguments[0], "pwd") == 0) {
-        execute_pwd();
+        if (arg_count > 1) {
+            fprintf(stderr, "pwd: too many arguments\n");
+        } else {
+            execute_pwd();
+        }
     } else if (strcmp(arguments[0], "cat") == 0) {
-        execute_cat(arguments[1]);
+        if (arg_count > 2) {
+            fprintf(stderr, "cat: too many arguments\n");
+        } else {
+            execute_cat(arguments[1]);
+        }
     } else if (strcmp(arguments[0], "exit") == 0) {
         exit(0);
     } else if (strcmp(arguments[0], "-v") == 0) {
