@@ -136,8 +136,6 @@ void run_shell() {
     char command[MAX_COMMAND_LENGTH];
 
     while (1) {
-        system("clear"); // Clear the shell prompt
-
         display_prompt();
 
         if (fgets(command, sizeof(command), stdin) == NULL) {
