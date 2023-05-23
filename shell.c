@@ -33,26 +33,23 @@ void execute_cd(char* arg) {
 }
 
 void execute_ls(char* arg) {
-    DIR* dir;
-    struct dirent* entry;
+    char* ls_args[] = { "/bin/ls", "-l", arg, NULL };
 
-    if (arg == NULL) {
-        dir = opendir(".");
-    } else {
-        dir = opendir(arg);
-    }
+    pid_t pid = fork();
 
-    if (dir == NULL) {
-        perror("opendir");
+    if (pid == -1) {
+        perror("fork");
         return;
-    }
-
-    while ((entry = readdir(dir)) != NULL) {
-        printf("%s\n", entry->d_name);
-    }
-
-    if (closedir(dir) != 0) {
-        perror("closedir");
+    } else if (pid == 0) {
+        // Child process
+        if (execve("/bin/ls", ls_args, NULL) == -1) {
+            perror("execve");
+            exit(1);
+        }
+    } else {
+        // Parent process
+        int status;
+        waitpid(pid, &status, 0);
     }
 }
 
@@ -121,6 +118,7 @@ void execute_command(char* command) {
                 }
                 printf("\n");
             }
+
             execvp(arguments[0], arguments);
 
             // execvp returns only if an error occurs
@@ -148,4 +146,9 @@ void run_shell() {
 
         execute_command(command);
     }
+}
+
+int main() {
+    run_shell();
+    return 0;
 }
